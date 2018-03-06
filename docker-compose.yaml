@@ -1,0 +1,24 @@
+version: '2'
+services:
+    nginx:
+        image: "nginx:latest"
+        restart: always
+        container_name: nginx001
+        ports:
+            - 80:80
+        volumes:
+            - ./app/static:/app/static
+            - ./conf/nginx:/etc/nginx/conf.d
+        depends_on:
+            - web
+    web:
+        build: ./app
+        restart: always
+        # do not using container_name, then you want using scale
+        working_dir: /app
+        volumes:
+            - ./app:/app
+        expose:
+            - 8000
+        command: gunicorn app:app -b :8000 --name app --log-level=debug --log-file=-
+
